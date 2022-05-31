@@ -2,35 +2,19 @@
 
 namespace Assets.Scripts.Gameplay.Objects.Collectable
 {
-    public class Crystal : MonoBehaviour, ICollectable
+    public class Crystal : CollectableObject
     {
-        private float angle = 0;
-        private float angleStep = 1;
+        private float _currentAngle = 0;
+        private float _angleStep = 1;
 
-        public void Collect()
+        protected override void Move()
         {
-            // Записать собранный кристалл
+            if (_currentAngle >= 360)
+                _currentAngle = 0;
 
+            transform.rotation = Quaternion.AngleAxis(_currentAngle, Vector3.up);
 
-
-
-            // Уничтожить кристалл
-            Destroy(gameObject);
-        }
-
-        public void Update()
-        {
-            Rotate();
-        }
-
-        private void Rotate()
-        {
-            if (angle >= 360)
-                angle = 0;
-
-            transform.rotation = Quaternion.AngleAxis(angle, Vector3.up);
-
-            angle += angleStep;
+            _currentAngle += _angleStep;
         }
     }
 }

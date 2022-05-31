@@ -1,4 +1,6 @@
-﻿using Assets.Scripts.UI.Buttons;
+﻿using Assets.Scripts.ThirdParty;
+using Assets.Scripts.ThirdParty.Events;
+using Assets.Scripts.UI.Buttons;
 using TMPro;
 using UnityEngine;
 
@@ -37,7 +39,7 @@ namespace Assets.Scripts.UI
 
         private void Restart()
         {
-            Game.PlayManager.Restart();
+            EventManager.TriggerEvent(new GamePlayRestartEvent());
         }
     }
 }

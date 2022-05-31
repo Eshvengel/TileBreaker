@@ -19,5 +19,6 @@ namespace Assets.Scripts.Gameplay.Handlers.PlayerActions
 
         public abstract void Execute(Action onStart = null, Action onComplete = null);
         public abstract bool CanExecute();
+        public abstract void Dispose();
     }
 }

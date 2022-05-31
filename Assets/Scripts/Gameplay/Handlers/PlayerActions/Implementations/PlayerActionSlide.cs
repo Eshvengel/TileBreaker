@@ -11,6 +11,7 @@ namespace Assets.Scripts.Gameplay.Handlers.PlayerActions.Implementations
     public class PlayerActionSlide : PlayerAction
     {
         private ITile[] _tiles;
+        private Sequence _sequence;
 
         public PlayerActionSlide(Player player, ITile[] tiles, float time = 0.15f, Ease ease = Ease.OutCubic) : base(player, time, ease)
         {
@@ -21,11 +22,11 @@ namespace Assets.Scripts.Gameplay.Handlers.PlayerActions.Implementations
         {
             onStart?.Invoke();
 
-            var sequence = DOTween.Sequence();
+            _sequence = DOTween.Sequence();
             var path = new Path(PathType.Linear, _tiles.Select(tile => tile.WorldPosition + Player.WorldOffset).ToArray(), 10);
             var time = Time * (_tiles.Length - 1);
 
-            sequence
+            _sequence
                 .Append(Player.Transform.DOPath(path, time)
                 .OnWaypointChange(value =>
                 {
@@ -49,6 +50,15 @@ namespace Assets.Scripts.Gameplay.Handlers.PlayerActions.Implementations
         public override bool CanExecute()
         {
             return true;
+        }
+
+        public override void Dispose()
+        {
+            if (_sequence != null)
+            {
+                _sequence.Kill();
+                _sequence = null;
+            }
         }
     }
 }   

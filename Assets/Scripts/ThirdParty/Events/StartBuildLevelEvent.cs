@@ -4,11 +4,11 @@ namespace Assets.Scripts.ThirdParty.Events
 {
     public class StartBuildLevelEvent : Event
     {
-        public Level Level { get; }
+        public int LevelId { get; }
 
-        public StartBuildLevelEvent(Level level)
+        public StartBuildLevelEvent(int levelId)
         {
-            Level = level;
+            LevelId = levelId;
         }
     }
 }

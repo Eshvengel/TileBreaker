@@ -6,5 +6,9 @@ namespace Assets.Scripts.Gameplay.Handlers
     {
         bool InProcess { get; }
         void MakeAction(IPlayerAction playerAction);
+
+        void MakeActionNow(IPlayerAction playerAction);
+
+        void Dispose();
     }
 }

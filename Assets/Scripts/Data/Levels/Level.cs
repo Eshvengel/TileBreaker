@@ -4,8 +4,8 @@ namespace Assets.Scripts.Data.Levels
 {
     public class Level
     {
-        public int Id;
-        public TileData[] Data;
+        public int Id { get; set; }
+        public TileData[] Data { get; set; }
 
         public Level(int id, TileData[] data)
         {

@@ -1,23 +1,19 @@
 ﻿using Assets.Scripts.Data.TilesData;
+using Assets.Scripts.Gameplay;
 using Assets.Scripts.Gameplay.Field;
+using Assets.Scripts.Gameplay.Tiles;
 using Assets.Scripts.Gameplay.Tiles.Implementations;
 using UnityEngine;
 
-namespace Assets.Scripts.Gameplay.Tiles
+namespace Gameplay
 {
-    public class TilesContainer : MonoBehaviour
+    public class References : MonoBehaviour
     {
-        [SerializeField] 
-        private TileJump _tileJump;
-
-        [SerializeField] 
-        private TileSlide _tileSlide;
-
-        [SerializeField] 
-        private TileStart _tileStart;
-
-        [SerializeField] 
-        private TileCommon _tileCommon;
+        [SerializeField] private Player _player;
+        [SerializeField] private TileJump _tileJump;
+        [SerializeField] private TileSlide _tileSlide;
+        [SerializeField] private TileStart _tileStart;
+        [SerializeField] private TileCommon _tileCommon;
 
 //        [SerializeField] 
 //        private TileSolid _tileSolid;
@@ -25,13 +21,24 @@ namespace Assets.Scripts.Gameplay.Tiles
 //        [SerializeField] 
 //        private TilePortal _tilePortal;
 
-        private static TilesContainer instance;
+        private static References instance;
 
         private void Awake()
         {
             instance = this;
         }
 
+        public static Player CreatePlayer()
+        {
+            return instance.Get();
+        }
+        
+        private Player Get()
+        {
+            return Instantiate(_player);
+        }
+        
+        
         public static ITile Create(TileData data, GameField gameField)
         {
             return instance.Get(data, gameField);

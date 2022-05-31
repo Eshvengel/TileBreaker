@@ -13,7 +13,7 @@ namespace Assets.Scripts.Gameplay.Field
         private const string GAMEFIELD_NAME = "GameField";
 
         private List<ITile> _tiles;
-        private Transform _tilesContainer;
+        private readonly Transform _tilesContainer;
         
         public GameField()
         {
@@ -88,7 +88,7 @@ namespace Assets.Scripts.Gameplay.Field
             return (TileStart) _tiles.FirstOrDefault(tile => tile is TileStart);
         }
         
-        public void Dispose()
+        public void Clear()
         {
             foreach (var tile in _tiles)
             {

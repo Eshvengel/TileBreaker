@@ -26,7 +26,7 @@ namespace Assets.Scripts.Gameplay.Components
 
         private void Update()
         {
-            FollowTarget();
+            // FollowTarget();
         }
 
         private void FollowTarget()

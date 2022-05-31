@@ -2,8 +2,7 @@
 using Assets.Scripts.Data.Levels;
 using Assets.Scripts.Gameplay.Field.FieldPresenter;
 using Assets.Scripts.Gameplay.Tiles;
-using Assets.Scripts.ThirdParty;
-using Assets.Scripts.ThirdParty.Events;
+using Gameplay;
 using UnityEngine;
 
 namespace Assets.Scripts.Gameplay.Field.FieldBuilder
@@ -20,8 +19,6 @@ namespace Assets.Scripts.Gameplay.Field.FieldBuilder
         {
             _gameField = new GameField();
             _presenter = new DefaultGameFieldPresenter();
-
-            //_presenter = new LeftDownToRightUpGameFieldPresenter();
         }
 
         public void Build(Level level)
@@ -40,11 +37,11 @@ namespace Assets.Scripts.Gameplay.Field.FieldBuilder
 
             _level = level;
 
-            PrepareGameField();
-            CreateTiles(level);
-            StartPresent(_gameField, () =>
+            ClearGameField();
+            FillGameField();
+            StartPresent(() =>
             {
-                EventManager.TriggerEvent(new GamePlayStartEvent(_gameField));
+                //EventManager.TriggerEvent(new GamePlayStartEvent(_gameField));
             });
         }
 
@@ -53,25 +50,23 @@ namespace Assets.Scripts.Gameplay.Field.FieldBuilder
             Build(_level);
         }
 
-        private void PrepareGameField()
+        private void ClearGameField()
         {
-            _gameField.Dispose();
+            _gameField.Clear();
         }
 
-        private void CreateTiles(Level level)
+        private void FillGameField()
         {
-            foreach (var data in level.Data)
+            foreach (var data in _level.Data)
             {
-                var tile = TilesContainer.Create(data, _gameField);
+                var tile = References.Create(data, _gameField);
                 _gameField.Add(tile);
             }
         }
 
-        private void StartPresent(GameField gameField, Action callback)
+        private void StartPresent(Action callback)
         {
-            StartCoroutine(_presenter.Present(gameField, callback));
-            
-            //Game.Instance.StartCoroutine(_presenter.Present(gameField, callback));
+            StartCoroutine(_presenter.Present(_gameField, callback));
         }
     }
 }

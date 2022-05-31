@@ -6,5 +6,7 @@ namespace Assets.Scripts.Gameplay.Handlers.PlayerActions
     {
         void Execute(Action onStart = null, Action onComplete = null);
         bool CanExecute();
+
+        void Dispose();
     }
 }

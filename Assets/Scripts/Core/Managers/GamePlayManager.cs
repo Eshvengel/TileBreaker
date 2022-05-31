@@ -1,7 +1,11 @@
-﻿using Assets.Scripts.Gameplay.Field.FieldBuilder;
+﻿using Assets.Scripts.Data.Levels;
+using Assets.Scripts.Gameplay;
+using Assets.Scripts.Gameplay.Field.FieldBuilder;
+using Assets.Scripts.Gameplay.Handlers.PlayerActions.Implementations;
+using Assets.Scripts.Gameplay.Tiles;
 using Assets.Scripts.ThirdParty;
 using Assets.Scripts.ThirdParty.Events;
-using DG.Tweening;
+using Gameplay;
 using ThirdParty.Events;
 using UnityEngine;
 
@@ -10,10 +14,15 @@ namespace Assets.Scripts.Core.Managers
     public class GamePlayManager
     {
         public GameplayState State { get; private set; }
-        public IGameFieldBuilder GameFieldBuilder { get; private set; }
 
-        public GamePlayManager()
+        private Player _player;
+        private IGameFieldBuilder _gameFieldBuilder;
+        private readonly ILevelRepositoryReader _levelsRepository;
+
+        public GamePlayManager(ILevelRepositoryReader levelsRepository)
         {
+            _levelsRepository = levelsRepository;
+            
             CreateGameFieldBuilder();
             AddListeners();
         }
@@ -23,20 +32,51 @@ namespace Assets.Scripts.Core.Managers
             RemoveListeners();
         }
 
-        public void Restart()
+        private void Restart()
         {
             State = GameplayState.Restart;
 
-            EventManager.TriggerEvent(new GamePlayRestartEvent());
+            Rebuild();
+            CreatePlayer();
+        }
+        
+        private void CreateGameFieldBuilder()
+        {
+            var gameFieldBuilderGameObject = new GameObject("GameFieldBuilder");
+            _gameFieldBuilder = gameFieldBuilderGameObject.AddComponent<GameFieldBuilder>();
+        }
+
+        private void Build(int levelId)
+        {
+            var level = _levelsRepository.Load(levelId);
             
-            GameFieldBuilder.Rebuild();
+            _gameFieldBuilder.Build(level);
+        }
+
+        private void Rebuild()
+        {
+            _gameFieldBuilder.Rebuild();
+        }
+        
+        private void CreatePlayer()
+        {
+            if (_player != null)
+            {
+                _player.Destroy();
+            }
+            
+            _player = References.CreatePlayer();
+            _player.Initialize(_gameFieldBuilder.GameField);
         }
 
         private void OnComplete()
         {
             State = GameplayState.Complete;
 
-            Restart();
+            Build(2);
+            CreatePlayer();
+            
+            // Restart();
         }
 
         private void OnFail()
@@ -47,6 +87,7 @@ namespace Assets.Scripts.Core.Managers
         private void AddListeners()
         {
             EventManager.AddListener<StartBuildLevelEvent>(OnStartBuildLevel);
+            EventManager.AddListener<GamePlayRestartEvent>(OnRestartLevel);
             EventManager.AddListener<GamePlayStartEvent>(OnGamePlayStart);
             EventManager.AddListener<GamePlayPauseEvent>(OnGamePlayPause);
             EventManager.AddListener<PlayerActionCompleteEvent>(OnPlayerActionComplete);
@@ -55,6 +96,7 @@ namespace Assets.Scripts.Core.Managers
         private void RemoveListeners()
         {
             EventManager.RemoveListener<StartBuildLevelEvent>(OnStartBuildLevel);
+            EventManager.RemoveListener<GamePlayRestartEvent>(OnRestartLevel);
             EventManager.RemoveListener<GamePlayStartEvent>(OnGamePlayStart);
             EventManager.RemoveListener<GamePlayPauseEvent>(OnGamePlayPause);
             EventManager.RemoveListener<PlayerActionCompleteEvent>(OnPlayerActionComplete);
@@ -62,10 +104,15 @@ namespace Assets.Scripts.Core.Managers
 
         private void OnStartBuildLevel(StartBuildLevelEvent e)
         {
-            if (State == GameplayState.Play)
-                return;
+            if (State == GameplayState.Play) return;
 
-            GameFieldBuilder.Build(e.Level); ;
+            Build(e.LevelId);
+            CreatePlayer();
+        }
+        
+        private void OnRestartLevel(GamePlayRestartEvent e)
+        {
+            Restart();
         }
 
         private void OnGamePlayStart(GamePlayStartEvent e)
@@ -80,9 +127,9 @@ namespace Assets.Scripts.Core.Managers
 
         private void OnPlayerActionComplete(PlayerActionCompleteEvent e)
         {
-            if (!GameFieldBuilder.GameField.HasMoves(e.Player) && !e.Player.InProcess())
+            if (!_gameFieldBuilder.GameField.HasMoves(e.Player) /*&& !e.Player.InProcess()*/ )
             {
-                if (GameFieldBuilder.GameField.IsClean())
+                if (_gameFieldBuilder.GameField.IsClean())
                 {
                     OnComplete();
                 }
@@ -91,12 +138,6 @@ namespace Assets.Scripts.Core.Managers
                     OnFail();
                 }
             }
-        }
-
-        private void CreateGameFieldBuilder()
-        {
-            var gameFieldBuilder = new GameObject("GameFieldBuilder");
-            GameFieldBuilder = gameFieldBuilder.AddComponent<GameFieldBuilder>();
         }
     }
 }

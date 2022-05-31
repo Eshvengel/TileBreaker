@@ -10,8 +10,8 @@ namespace Assets.Scripts.Gameplay.Handlers.PlayerActions.Implementations
     public class PlayerActionSpawn : PlayerAction
     {
         private readonly ITile _toTile;
-
-        public PlayerActionSpawn(Player player, ITile toTile, float time = 0.15f, Ease ease = Ease.OutSine) : base(player, time, ease)
+        private Sequence _sequence;
+        public PlayerActionSpawn(Player player, ITile toTile, float time = .5f, Ease ease = Ease.OutSine) : base(player, time, ease)
         {
             _toTile = toTile;
         }
@@ -20,11 +20,15 @@ namespace Assets.Scripts.Gameplay.Handlers.PlayerActions.Implementations
         {
             onStart?.Invoke();
 
-            Player.Transform
-                .DOMoveY(_toTile.WorldPosition.y + Player.WorldOffset.y, Time)
+            _sequence = DOTween.Sequence();
+
+            _sequence
+                .Append(Player.Transform.DOScale(Vector3.one, Time))
+                .Join(Player.Transform.DOMoveY(_toTile.WorldPosition.y + Player.WorldOffset.y, Time))
                 .OnStart(() =>
                 {
-                    Player.WorldPosition = _toTile.WorldPosition + Vector3.up * .1f;
+                    Player.WorldPosition = _toTile.WorldPosition + Vector3.up * 5f;
+                    Player.Transform.localScale = Vector3.zero;
                 })
                 .OnComplete(() =>
                 {
@@ -42,6 +46,15 @@ namespace Assets.Scripts.Gameplay.Handlers.PlayerActions.Implementations
         public override bool CanExecute()
         {
             return _toTile != null && _toTile.Interactable;
+        }
+
+        public override void Dispose()
+        {
+            if (_sequence != null)
+            {
+                _sequence.Kill();
+                _sequence = null;
+            }
         }
     }
 }

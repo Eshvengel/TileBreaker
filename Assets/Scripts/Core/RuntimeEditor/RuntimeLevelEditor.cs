@@ -10,6 +10,7 @@ using Assets.Scripts.Gameplay.Tiles;
 using Assets.Scripts.Core.RuntimeEditor.Grid;
 using Assets.Scripts.Core.RuntimeEditor.Brush;
 using Assets.Scripts.Utils;
+using Gameplay;
 using UnityEngine;
 
 namespace Assets.Scripts.Core.RuntimeEditor
@@ -137,7 +138,7 @@ namespace Assets.Scripts.Core.RuntimeEditor
 
             if (!_builder.GameField.IsTileExist(data.X, data.Y))
             {
-                ITile tile = TilesContainer.Create(data, _builder.GameField);
+                ITile tile = References.Create(data, _builder.GameField);
                 _builder.GameField.Add(tile);
                 _tilesData[tile.GetHashCode()] = data;
             }
@@ -188,16 +189,18 @@ namespace Assets.Scripts.Core.RuntimeEditor
 
         public void Clear()
         {
-            _builder.GameField.Dispose();
+            _builder.GameField.Clear();
             _tilesData.Clear();
         }
 
         public void Play()
         {
             var tileStart = _builder.GameField.GetStart();
-            
+
             if (tileStart != null)
+            {
                 Player.SetPosition(tileStart);
+            }
         }
 
         public void Stop()

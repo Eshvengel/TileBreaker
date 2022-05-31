@@ -7,7 +7,8 @@ namespace Assets.Scripts.Gameplay.Tiles
 {
     public abstract class Tile<T> : MonoBehaviour, ITile where T : TileData
     {
-        private const float SCALE_DURATION = 0.4f;
+        private const float SHOW_DURATION = 0.4f;
+        private const float HIDE_DURATION = 0.4f;
         
         public T Data { get; private set; }
         public bool Interactable { get; protected set; }
@@ -20,6 +21,11 @@ namespace Assets.Scripts.Gameplay.Tiles
         public abstract void OnPlayerExit(Player player);
         public abstract void OnPlayerEnter(Player player);
 
+        protected virtual void OnInitialize()
+        {
+            
+        }
+
         protected GameField GameField { get; private set; }
 
         public void Initialize(T data, GameField gameField)
@@ -27,6 +33,8 @@ namespace Assets.Scripts.Gameplay.Tiles
             Data = data;
             GameField = gameField;
             AnimationSequence = DOTween.Sequence();
+            
+            OnInitialize();
         }
         
         public void Show()
@@ -44,8 +52,8 @@ namespace Assets.Scripts.Gameplay.Tiles
             transform.localScale = Vector3.zero;
 
             AnimationSequence
-                .Insert(0, transform.DOScale(new Vector3(1, 0.1f, 1), 0.4f))
-                .Insert(0, transform.DOMove(WorldPosition, 0.4f).SetEase(Ease.OutBack));
+                .Insert(0, transform.DOScale(new Vector3(1, 0.1f, 1), SHOW_DURATION))
+                .Insert(0, transform.DOMove(WorldPosition, SHOW_DURATION).SetEase(Ease.OutBack));
         }
 
         public void Hide()
@@ -60,8 +68,8 @@ namespace Assets.Scripts.Gameplay.Tiles
             Interactable = false;
 
             AnimationSequence
-                .Insert(0, transform.DOScale(Vector3.zero, 0.4f))
-                .Insert(0, transform.DOMove(transform.localPosition + Vector3.down * 3, 0.4f));
+                .Insert(0, transform.DOScale(Vector3.zero, HIDE_DURATION))
+                .Insert(0, transform.DOMove(transform.localPosition + Vector3.down * 3, HIDE_DURATION));
         }
 
         public bool Equal(int x, int y)

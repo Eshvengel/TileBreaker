@@ -14,6 +14,8 @@ namespace Assets.Scripts.Gameplay.Handlers.PlayerActions.Implementations
         private ITile _fromTile;
         private ITile _toTile;
 
+        private Sequence _sequence;
+
         public PlayerActionJump(Player player, ITile fromTile, ITile toTile, float time = 0.4f, Ease ease = Ease.OutCubic) : base(player, time, ease)
         {
             _fromTile = fromTile;
@@ -24,7 +26,7 @@ namespace Assets.Scripts.Gameplay.Handlers.PlayerActions.Implementations
         {
             onStart?.Invoke();
 
-            Player.Transform
+            _sequence = Player.Transform
                 .DOJump(_toTile.WorldPosition + Player.WorldOffset, JUMP_POWER, JUMP_COUNT, Time)
                 .OnStart(() =>
                 {
@@ -45,6 +47,15 @@ namespace Assets.Scripts.Gameplay.Handlers.PlayerActions.Implementations
         public override bool CanExecute()
         {
             return _toTile != null && _toTile.Interactable;
+        }
+
+        public override void Dispose()
+        {
+            if (_sequence != null)
+            {
+                _sequence.Kill();
+                _sequence = null;
+            }
         }
     }
 }

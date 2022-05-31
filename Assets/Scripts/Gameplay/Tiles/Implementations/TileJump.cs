@@ -7,6 +7,7 @@ namespace Assets.Scripts.Gameplay.Tiles.Implementations
 {
     public class TileJump : Tile<TileJumperData>
     {
+        [SerializeField] private TileDirection _tileDirection;
         public override void OnPlayerEnter(Player player)
         {
             Vector2Int direction = Data.JumpDirection.ToVector2Int();
@@ -19,6 +20,11 @@ namespace Assets.Scripts.Gameplay.Tiles.Implementations
         public override void OnPlayerExit(Player player)
         {
             Hide();
+        }
+
+        protected override void OnInitialize()
+        {
+            _tileDirection.SetDirection(Data.JumpDirection);
         }
     }
 }

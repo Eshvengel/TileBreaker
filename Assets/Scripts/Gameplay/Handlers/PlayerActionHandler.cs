@@ -17,6 +17,22 @@ namespace Assets.Scripts.Gameplay.Handlers
                 _lastPlayerAction = playerAction;
             }
         }
+        
+        public void MakeActionNow(IPlayerAction playerAction)
+        {
+            if (playerAction.CanExecute())
+            {
+                playerAction.Execute(Lock, Unlock);
+
+                _lastPlayerAction = playerAction;
+            }
+        }
+
+        public void Dispose()
+        {
+            _lastPlayerAction.Dispose();
+        }
+
         private void Lock()
         {
             InProcess = true;

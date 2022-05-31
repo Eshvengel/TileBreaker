@@ -2,33 +2,46 @@
 using Assets.Scripts.Gameplay.Tiles;
 using System;
 using Assets.Scripts.Gameplay.Field;
+using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.EventSystems;
 
 namespace Assets.Scripts.Gameplay.Handlers
 {
-    public class InputHandler : MonoBehaviour, IDragHandler
+    public class InputHandler
     {
-        public static Action<Vector2> OnInput;
+        // public event Action<ITile, ITile> OnInput;
         
-        private Player _player;
-        private GameField _gameField;
+        private readonly Player _player;
+        private readonly GameField _gameField;
         
-        public void Awake()
+        public InputHandler(Player player , GameField gameField)
         {
-            _player = FindObjectOfType<Player>();
+            _player = player;
+            _gameField = gameField;
         }
 
         public void Update()
         {
-
-            if (_gameField == null)
-            {
-                _gameField = Game.PlayManager.GameFieldBuilder.GameField;
-            }
-
+            HandleTouches();
+            
 #if UNITY_EDITOR
 
+            HandleKeyboard();
+#endif
+        }
+        
+        /*public void OnDrag(PointerEventData eventData)
+        {
+            if (eventData.delta != Vector2.zero) // && !_player.InProcess())
+            {
+                //OnInput?.Invoke(eventData.delta);
+
+                TryMakeStep(eventData.delta);
+            }
+        }*/
+
+        private void HandleKeyboard()
+        {
             if (Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.LeftArrow))
                 TryMakeStep(Vector2.left);
 
@@ -40,19 +53,18 @@ namespace Assets.Scripts.Gameplay.Handlers
 
             if (Input.GetKeyDown(KeyCode.S) || Input.GetKeyDown(KeyCode.DownArrow))
                 TryMakeStep(Vector2.down);
-#endif
         }
-        
-        public void OnDrag(PointerEventData eventData)
-        {
-            if (eventData.delta != Vector2.zero) // && !_player.InProcess())
-            {
-                if (OnInput != null)
-                {
-                    OnInput(eventData.delta);
-                }
 
-//                TryMakeStep(eventData.delta);
+        private void HandleTouches()
+        {
+            if (Input.touchSupported && Input.touchCount > 0)
+            {
+                Touch touch = Input.GetTouch(0);
+
+                if (touch.phase == TouchPhase.Moved)
+                {
+                    TryMakeStep(touch.deltaPosition);
+                }
             }
         }
             

@@ -1,10 +1,9 @@
-﻿using Assets.Scripts.Gameplay.Handlers;
+﻿using Assets.Scripts.Gameplay.Field;
+using Assets.Scripts.Gameplay.Field.FieldBuilder;
+using Assets.Scripts.Gameplay.Handlers;
 using Assets.Scripts.Gameplay.Handlers.PlayerActions;
 using Assets.Scripts.Gameplay.Handlers.PlayerActions.Implementations;
 using Assets.Scripts.Gameplay.Tiles;
-using Assets.Scripts.ThirdParty;
-using Assets.Scripts.ThirdParty.Events;
-using DG.Tweening;
 using UnityEngine;
 
 namespace Assets.Scripts.Gameplay
@@ -18,27 +17,35 @@ namespace Assets.Scripts.Gameplay
         public Vector3 WorldOffset { get; private set; }
         public Transform Transform { get; private set; }
         public MeshRenderer MeshRenderer { get; private set; }
-        public IPlayerActionHandler PlayerActionHandler { get; private set; }
         
         public Vector3 WorldPosition
         {
             get => Transform.position;
             set => Transform.position = value + WorldOffset;
         }
+        
+        private IPlayerActionHandler _playerActionHandler;
+        private InputHandler _inputHandler;
 
         private void Awake()
         {
             Transform = gameObject.transform;
             MeshRenderer = GetComponent<MeshRenderer>();
-            PlayerActionHandler = new PlayerActionHandler();
             WorldOffset = new Vector3(0, MeshRenderer.bounds.size.y / 2, 0);
-
-            AddListeners();
         }
 
-        private void OnDestroy()
+        public void Initialize(GameField gameField)
         {
-            RemoveListeners();
+            _playerActionHandler = new PlayerActionHandler();
+            _inputHandler = new InputHandler(this, gameField);
+            
+            TryMakeAction(new PlayerActionSpawn(this, gameField.GetStart()));
+        }
+        
+
+        private void Update()
+        {
+            _inputHandler.Update();
         }
 
         public void SetPosition(ITile tile)
@@ -50,52 +57,24 @@ namespace Assets.Scripts.Gameplay
         
         public void RoundRotation()
         {
-            Transform.eulerAngles = Vector3Int.RoundToInt(Transform.eulerAngles);
+            Transform.rotation = Quaternion.Euler(Vector3Int.RoundToInt(Transform.eulerAngles));
         }
 
         public bool InProcess()
         {
-            return PlayerActionHandler.InProcess;
+            return _playerActionHandler.InProcess;
         }
 
         public void TryMakeAction(IPlayerAction playerAction)
         {
-            PlayerActionHandler.MakeAction(playerAction);
+            _playerActionHandler.MakeAction(playerAction);
         }
 
-        private void AddListeners()
+        public void Destroy()
         {
-            EventManager.AddListener<GamePlayStartEvent>(OnGamePlayStart);
-            EventManager.AddListener<GamePlayRestartEvent>(OnGamePlayRestart);
-        }
-
-        private void RemoveListeners()
-        {
-            EventManager.RemoveListener<GamePlayStartEvent>(OnGamePlayStart);
-            EventManager.RemoveListener<GamePlayRestartEvent>(OnGamePlayRestart);
-        }
-
-        private void OnInput(Vector2 direction)
-        {
-
-        }
-
-        private void OnGamePlayRestart(GamePlayRestartEvent e)
-        {
-            X = -1;
-            Y = -1;
-            WorldPosition = Vector3.right * 100;
+            _playerActionHandler.Dispose();
             
-            //PlayerActionHandler.MakeAction(new PlayerActionDespawn(this, 1f, Ease.Linear));
-            
-            //PlayerActionHandler.MakeAction(new PlayerActionSpawn(this, e.Field.GetStart(), 1f));
-        }
-
-        private void OnGamePlayStart(GamePlayStartEvent e)
-        {
-            //SetPosition(e.Field.GetStart());
-            
-            PlayerActionHandler.MakeAction(new PlayerActionSpawn(this, e.Field.GetStart(), 1f));
+            Destroy(gameObject);
         }
     }
 }

@@ -13,6 +13,7 @@ namespace Assets.Scripts.Gameplay.Handlers.PlayerActions.Implementations
 
         private ITile _fromTile;
         private ITile _toTile;
+        private Tweener _tweener;
 
         public PlayerActionMove(Player player, ITile fromTile, ITile toTile, float time = 0.15f, Ease ease = Ease.OutSine) : base(player, time, ease)
         {
@@ -25,11 +26,11 @@ namespace Assets.Scripts.Gameplay.Handlers.PlayerActions.Implementations
             onStart?.Invoke();
 
             var lastValue = 0f;
-            var direction = CalcDirection(Player, _toTile);
-            var rotatePoint = CalcRotatePoint(direction);
-            var rotateAxis = CalcRotateAxis(direction);
+            var direction = CalculateDirection(Player, _toTile);
+            var rotatePoint = CalculateRotatePoint(direction);
+            var rotateAxis = CalculateRotateAxis(direction);
             
-            DOVirtual
+            _tweener = DOVirtual
                 .Float(0, 1, Time, value =>
                 {
                     var calcAngle = ROTATE_ANGLE * (value - lastValue);
@@ -60,19 +61,30 @@ namespace Assets.Scripts.Gameplay.Handlers.PlayerActions.Implementations
             return _toTile != null && _toTile.Interactable;
         }
 
-        private Vector3 CalcDirection(Player player, ITile toTile)
+        public override void Dispose()
+        {
+            if (_tweener != null)
+            {
+                _tweener.Kill();
+                _tweener = null;
+            }
+        }
+
+        private Vector3 CalculateDirection(Player player, ITile toTile)
         {
             return new Vector3(toTile.WorldPosition.x - player.WorldPosition.x, 0, toTile.WorldPosition.z - player.WorldPosition.z).normalized;
         }
 
-        private Vector3 CalcRotatePoint(Vector3 direction)
+        private Vector3 CalculateRotatePoint(Vector3 direction)
         {
-            return new Vector3(Player.WorldPosition.x + Player.MeshRenderer.bounds.size.x / 2 * direction.x,
-                                Player.WorldPosition.y - Player.MeshRenderer.bounds.size.y / 2,
-                                Player.WorldPosition.z + Player.MeshRenderer.bounds.size.z / 2 * direction.z);
+            var bounds = Player.MeshRenderer.bounds;
+            
+            return new Vector3(Player.WorldPosition.x + bounds.size.x / 2 * direction.x,
+                                Player.WorldPosition.y - bounds.size.y / 2,
+                                Player.WorldPosition.z + bounds.size.z / 2 * direction.z);
         }
 
-        private Vector3 CalcRotateAxis(Vector3 direction)
+        private Vector3 CalculateRotateAxis(Vector3 direction)
         {
             return Vector3.Cross(Vector3.up, direction);
         }
