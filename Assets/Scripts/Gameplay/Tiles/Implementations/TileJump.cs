@@ -14,7 +14,9 @@ namespace Assets.Scripts.Gameplay.Tiles.Implementations
             ITile tile = GameField[X + direction.x * Data.JumpPower, Y + direction.y * Data.JumpPower];
 
             if (tile != null && tile.Interactable)
+            {
                 player.TryMakeAction(new PlayerActionJump(player, this, tile));
+            }
         }
 
         public override void OnPlayerExit(Player player)

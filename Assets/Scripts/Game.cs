@@ -10,7 +10,7 @@ namespace Assets.Scripts
 {
     public class Game : MonoBehaviour
     {
-        public const int MAX_LEVEL = 3;
+        public const int MAX_LEVEL = 10;
         
         private static Game instance;
 

@@ -715,7 +715,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   GridSize: 9
   TileSize: 1
-  LevelId: 1
+  LevelId: 4
   TileType: 0
   JumpPower: 0
   SlidePower: 0

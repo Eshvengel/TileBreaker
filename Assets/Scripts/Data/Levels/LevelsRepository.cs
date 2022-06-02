@@ -26,7 +26,7 @@ namespace Assets.Scripts.Data.Levels
             
             File.WriteAllText(path, data);
 
-            _loadedLevels[level.Id] = null;
+            _loadedLevels[level.Id] = level;
         }
 
         public Level Load(int levelId)
@@ -59,11 +59,14 @@ namespace Assets.Scripts.Data.Levels
 
             yield return request.SendWebRequest();
 
-            var settings = new JsonSerializerSettings();
-            var data = request.downloadHandler.text;
-            var level = JsonConvert.DeserializeObject<Level>(data, settings);
+            if (string.IsNullOrEmpty(request.error))
+            {
+                var settings = new JsonSerializerSettings();
+                var data = request.downloadHandler.text;
+                var level = JsonConvert.DeserializeObject<Level>(data, settings);
 
-            _loadedLevels[id] = level;
+                _loadedLevels[id] = level;
+            }
 
             yield return null;
         }

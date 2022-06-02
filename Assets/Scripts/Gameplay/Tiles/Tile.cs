@@ -1,4 +1,5 @@
-﻿using Assets.Scripts.Data.TilesData;
+﻿using System.Security.Cryptography;
+using Assets.Scripts.Data.TilesData;
 using Assets.Scripts.Gameplay.Field;
 using DG.Tweening;
 using UnityEngine;
@@ -16,10 +17,14 @@ namespace Assets.Scripts.Gameplay.Tiles
 
         public int X => Data.X;
         public int Y => Data.Y;
-        public Vector3 WorldPosition => Data.WorldPosition;
-
+        public Vector3 WorldPosition => Data.WorldPosition; 
+        
         public abstract void OnPlayerExit(Player player);
         public abstract void OnPlayerEnter(Player player);
+        public TileData GetTileData()
+        {
+            return Data;
+        }
 
         protected virtual void OnInitialize()
         {
@@ -33,7 +38,7 @@ namespace Assets.Scripts.Gameplay.Tiles
             Data = data;
             GameField = gameField;
             AnimationSequence = DOTween.Sequence();
-            
+
             OnInitialize();
         }
         

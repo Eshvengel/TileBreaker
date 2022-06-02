@@ -135,7 +135,7 @@ namespace Assets.Scripts.Core.Managers
 
         private void OnPlayerActionComplete(PlayerActionCompleteEvent e)
         {
-            if (!_gameFieldBuilder.GameField.HasMoves(e.Player) /*&& !e.Player.InProcess()*/ )
+            if (!_gameFieldBuilder.GameField.HasMoves(e.Player) && !e.Player.InProcess() )
             {
                 if (_gameFieldBuilder.GameField.IsClean())
                 {

@@ -4,7 +4,6 @@ using System.Linq;
 using Assets.Scripts.Data.Levels;
 using Assets.Scripts.Data.TilesData;
 using Assets.Scripts.Gameplay;
-using Assets.Scripts.Gameplay.Field;
 using Assets.Scripts.Gameplay.Field.FieldBuilder;
 using Assets.Scripts.Gameplay.Tiles;
 using Assets.Scripts.Core.RuntimeEditor.Grid;
@@ -31,7 +30,6 @@ namespace Assets.Scripts.Core.RuntimeEditor
         private IGrid _grid;
         private IBrush _brush;
         private IGameFieldBuilder _builder;
-//        private ITileFactory _tileFactory;
         private LevelsRepository _levelsRepository;
         private Dictionary<int, TileData> _tilesData;
 
@@ -39,12 +37,13 @@ namespace Assets.Scripts.Core.RuntimeEditor
 
         private void Awake()
         {
-            _levelsRepository = new LevelsRepository();
             _grid = new EditorGrid();
             _brush = new EditorTileBrush(EditorCamera);
             _tilesData = new Dictionary<int, TileData>();
+            _levelsRepository = new LevelsRepository();
             _builder = GetComponent<IGameFieldBuilder>();
-//            _tileFactory = GetComponent<ITileFactory>();
+
+            StartCoroutine(_levelsRepository.LoadAllLevels());
         }
 
         private void Update()
@@ -98,7 +97,7 @@ namespace Assets.Scripts.Core.RuntimeEditor
 
         private void DrawGraphic(float gridSize, int tileSize)
         {
-            _grid.Draw(gridSize, tileSize);
+            _grid?.Draw(gridSize, tileSize);
             _brush.Draw(gridSize, tileSize);
         }
 
@@ -133,14 +132,11 @@ namespace Assets.Scripts.Core.RuntimeEditor
 
         private void CreateTile(TileData data)
         {
-            if (data.Type == TileType.None || !CanCreateTile(data.X, data.Y)) 
-                return;
-
-            if (!_builder.GameField.IsTileExist(data.X, data.Y))
+            if (CanCreateTile(data))
             {
                 ITile tile = References.Create(data, _builder.GameField);
                 _builder.GameField.Add(tile);
-                _tilesData[tile.GetHashCode()] = data;
+                _tilesData[data.GetHashCode()] = data;
             }
         }
 
@@ -149,14 +145,15 @@ namespace Assets.Scripts.Core.RuntimeEditor
             if (_builder.GameField.IsTileExist(x, y))
             {
                 var tile = _builder.GameField[x, y];
+                var data = tile.GetTileData();
                 _builder.GameField.Remove(x, y);
-                _tilesData.Remove(tile.GetHashCode());
+                _tilesData.Remove(data.GetHashCode());
             }
         }
 
-        private bool CanCreateTile(int x, int y)
+        private bool CanCreateTile(TileData data)
         {
-            return !_builder.GameField.IsTileExist(x, y); //!_fakeGameField.IsTileValid(x, y));
+            return data.Type != TileType.None && !_builder.GameField.IsTileExist(data.X, data.Y); //!_fakeGameField.IsTileValid(x, y));
         }
 
         public void SaveLevel()
@@ -173,12 +170,16 @@ namespace Assets.Scripts.Core.RuntimeEditor
 
             if (level != null)
             {
-                foreach (var tileData in level.Data)
-                {
-                    _tilesData[tileData.GetHashCode()] = tileData;
-                }
-                
                 Build(level);
+
+                var tiles = _builder.GameField.GetTiles();
+
+                foreach (var tile in tiles)
+                {
+                    var data = tile.GetTileData();
+                    _tilesData[data.GetHashCode()] = data;
+                }
+
             }
         }
 
@@ -195,12 +196,12 @@ namespace Assets.Scripts.Core.RuntimeEditor
 
         public void Play()
         {
-            var tileStart = _builder.GameField.GetStart();
-
-            if (tileStart != null)
-            {
-                Player.SetPosition(tileStart);
-            }
+            // var tileStart = _builder.GameField.GetStart();
+            //
+            // if (tileStart != null)
+            // {
+            //     Player.SetPosition(tileStart);
+            // }
         }
 
         public void Stop()

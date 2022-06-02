@@ -84,15 +84,15 @@ namespace Assets.Scripts.Core.RuntimeEditor.Editor
 
             GUILayout.EndHorizontal();
 
-            GUILayout.BeginHorizontal();
-
-            if (GUILayout.Button("Play"))
-                RuntimeLevelEditor.Play();
-
-            if (GUILayout.Button("Stop"))
-                RuntimeLevelEditor.Stop();
-
-            GUILayout.EndHorizontal();
+            // GUILayout.BeginHorizontal();
+            //
+            // if (GUILayout.Button("Play"))
+            //     RuntimeLevelEditor.Play();
+            //
+            // if (GUILayout.Button("Stop"))
+            //     RuntimeLevelEditor.Stop();
+            //
+            // GUILayout.EndHorizontal();
             GUILayout.EndVertical();
         }
 

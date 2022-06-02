@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Assets.Scripts.Data.TilesData;
+using UnityEngine;
 
 namespace Assets.Scripts.Gameplay.Tiles
 {
@@ -12,9 +13,10 @@ namespace Assets.Scripts.Gameplay.Tiles
         void Show();
         void Hide();
         void Destroy();
-        bool Equal(int x, int y);
         bool Equal(ITile tile);
+        bool Equal(int x, int y);
         void OnPlayerExit(Player player);
         void OnPlayerEnter(Player player);
+        TileData GetTileData();
     }
 }
