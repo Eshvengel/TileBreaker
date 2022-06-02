@@ -11,12 +11,11 @@ namespace Assets.Scripts.UI.Buttons
         private const float PRESS_ANIMATION_TIME = 0.1f;
         private const float UNPRESS_ANIMATION_TIME = 0.1f;
 
-        [SerializeField]
-        private Transform _scaleContainer;
+        [SerializeField]  private Transform _scaleContainer;
 
-        private Tweener _tweenerAnimation;
+        private Tweener _tweener;
         private Vector3 _startScale;
-        private List<Action> _actions = new List<Action>();
+        private readonly List<Action> _actions = new List<Action>();
 
         private void Awake()
         {
@@ -38,12 +37,12 @@ namespace Assets.Scripts.UI.Buttons
                 _actions.Remove(action);
         }
 
-        public void RemoveAllListeners()
+        private void RemoveAllListeners()
         {
             _actions.Clear();
         }
 
-        public void OnClick()
+        private void OnClick()
         {
             if (_actions.Count <= 0)
                 return;
@@ -56,14 +55,14 @@ namespace Assets.Scripts.UI.Buttons
 
         private void PlayPressedAnimation()
         {
-            _tweenerAnimation?.Kill();
-            _tweenerAnimation = _scaleContainer.DOScale(_startScale * 0.9f, PRESS_ANIMATION_TIME);
+            _tweener?.Kill();
+            _tweener = _scaleContainer.DOScale(_startScale * 0.9f, PRESS_ANIMATION_TIME);
         }
 
         private void PlayUnpressedAnimation()
         {
-            _tweenerAnimation?.Kill();
-            _tweenerAnimation = _scaleContainer.DOScale(_startScale, UNPRESS_ANIMATION_TIME);
+            _tweener?.Kill();
+            _tweener = _scaleContainer.DOScale(_startScale, UNPRESS_ANIMATION_TIME);
         }
 
         public void OnPointerUp(PointerEventData eventData)

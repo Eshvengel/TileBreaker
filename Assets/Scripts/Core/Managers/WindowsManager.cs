@@ -1,7 +1,8 @@
 ﻿using System.Linq;
-using Assets.Scripts.Gameplay;
+using Assets.Scripts.ThirdParty;
 using Assets.Scripts.UI.Windows;
 using Assets.Scripts.UI.Windows.Implementations;
+using ThirdParty.Events;
 using UnityEngine;
 
 namespace Assets.Scripts.Core.Managers
@@ -11,7 +12,32 @@ namespace Assets.Scripts.Core.Managers
         [SerializeField]
         private Window[] _windows;
 
-       public void Open<T>() where T : Window
+        private void OnEnable()
+        {
+            AddListeners();
+        }
+
+        private void OnDisable()
+        {
+            RemoveListeners();
+        }
+
+        private void AddListeners()
+        {
+            EventManager.AddListener<GamePlayPauseEvent>(OnPauseEvent);
+        }
+
+        private void RemoveListeners()
+        {
+            EventManager.RemoveListener<GamePlayPauseEvent>(OnPauseEvent);
+        }
+
+        private void OnPauseEvent(GamePlayPauseEvent e)
+        {
+           Open<WindowPause>();
+        }
+
+        public void Open<T>() where T : Window
         {
             var window = _windows.FirstOrDefault(w => w is T);
 
@@ -20,20 +46,6 @@ namespace Assets.Scripts.Core.Managers
                 window.Open();
             }
             
-        }
-
-        public void OnEscape()
-        {
-            var gameState = Game.PlayManager.State;
-
-            if (gameState == GameplayState.Play)
-            {
-                OpenWindowOnEscape<WindowPause>();
-            }
-            else
-            {
-                OpenWindowOnEscape<WindowExit>();
-            }
         }
 
         private void OpenWindowOnEscape<T>() where T : Window
@@ -54,7 +66,7 @@ namespace Assets.Scripts.Core.Managers
         {
             if (Input.GetKeyDown(KeyCode.Escape))
             {
-                OnEscape();
+                OpenWindowOnEscape<WindowExit>();
             }
         }
     }

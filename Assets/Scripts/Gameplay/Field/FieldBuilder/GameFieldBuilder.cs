@@ -2,6 +2,8 @@
 using Assets.Scripts.Data.Levels;
 using Assets.Scripts.Gameplay.Field.FieldPresenter;
 using Assets.Scripts.Gameplay.Tiles;
+using Assets.Scripts.ThirdParty;
+using Assets.Scripts.ThirdParty.Events;
 using Gameplay;
 using UnityEngine;
 
@@ -41,7 +43,7 @@ namespace Assets.Scripts.Gameplay.Field.FieldBuilder
             FillGameField();
             StartPresent(() =>
             {
-                //EventManager.TriggerEvent(new GamePlayStartEvent(_gameField));
+                EventManager.TriggerEvent(new GamePlayStartEvent(_gameField, _level.Id));
             });
         }
 

@@ -29,14 +29,19 @@ namespace Assets.Scripts.Data.Levels
             _loadedLevels[level.Id] = null;
         }
 
-        public Level Load(int id)
+        public Level Load(int levelId)
         {
-            if (_loadedLevels.TryGetValue(id, out var value) && value != null)
+            if (levelId > _loadedLevels.Count || levelId < 1)
+            {
+                levelId = 1;
+            }
+            
+            if (_loadedLevels.TryGetValue(levelId, out var value) && value != null)
             {
                 return value;
             }
 
-            return new Level(id, null);
+            return new Level(levelId, null);
         }
 
         public IEnumerator LoadAllLevels()
@@ -69,8 +74,9 @@ namespace Assets.Scripts.Data.Levels
             
 #if UNITY_EDITOR
             return Path.Combine(Application.streamingAssetsPath, levelName);
-#endif
+#elif PLATFORM_ANDROID
             return Path.Combine("jar:file://" + Application.dataPath + "!/assets", levelName);
+#endif
         }
 
         private string GetLevelName(int id)

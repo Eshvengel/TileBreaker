@@ -4,7 +4,7 @@ namespace Assets.Scripts.Data.Levels
 {
     public interface ILevelRepositoryReader
     {
-        Level Load(int id);
+        Level Load(int levelId);
         IEnumerator LoadAllLevels();
     }
 }

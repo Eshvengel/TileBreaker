@@ -2,14 +2,13 @@
 using Assets.Scripts.Gameplay.Tiles;
 using System;
 using Assets.Scripts.Gameplay.Field;
-using Unity.VisualScripting;
 using UnityEngine;
 
 namespace Assets.Scripts.Gameplay.Handlers
 {
     public class InputHandler
     {
-        // public event Action<ITile, ITile> OnInput;
+        private const float SENSITIVITY = 25f; 
         
         private readonly Player _player;
         private readonly GameField _gameField;
@@ -22,24 +21,14 @@ namespace Assets.Scripts.Gameplay.Handlers
 
         public void Update()
         {
+#if PLATFORM_ANDROID
             HandleTouches();
+#endif
             
 #if UNITY_EDITOR
-
             HandleKeyboard();
 #endif
         }
-        
-        /*public void OnDrag(PointerEventData eventData)
-        {
-            if (eventData.delta != Vector2.zero) // && !_player.InProcess())
-            {
-                //OnInput?.Invoke(eventData.delta);
-
-                TryMakeStep(eventData.delta);
-            }
-        }*/
-
         private void HandleKeyboard()
         {
             if (Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.LeftArrow))
@@ -61,7 +50,7 @@ namespace Assets.Scripts.Gameplay.Handlers
             {
                 Touch touch = Input.GetTouch(0);
 
-                if (touch.phase == TouchPhase.Moved)
+                if (touch.phase == TouchPhase.Moved && touch.deltaPosition.sqrMagnitude > SENSITIVITY)
                 {
                     TryMakeStep(touch.deltaPosition);
                 }

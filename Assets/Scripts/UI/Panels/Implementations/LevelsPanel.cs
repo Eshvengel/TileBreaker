@@ -18,7 +18,7 @@ namespace Assets.Scripts.UI.Panels.Implementations
 
         public override void Show()
         {
-            if (inProcess || transform.localPosition == startPosition) return;
+            if (inProcess || rectTransform.localPosition == startPosition) return;
 
             rectTransform
                 .DOLocalMove(startPosition, TimeOut)
@@ -35,7 +35,7 @@ namespace Assets.Scripts.UI.Panels.Implementations
 
         public override void Hide()
         {
-            if (inProcess || transform.localPosition == endPosition) return;
+            if (inProcess || rectTransform.localPosition == endPosition) return;
 
             rectTransform
                 .DOLocalMove(endPosition, TimeIn)

@@ -15,6 +15,7 @@ namespace Assets.Scripts.Core.Managers
     {
         public GameplayState State { get; private set; }
 
+        private Level _level;
         private Player _player;
         private IGameFieldBuilder _gameFieldBuilder;
         private readonly ILevelRepositoryReader _levelsRepository;
@@ -48,9 +49,9 @@ namespace Assets.Scripts.Core.Managers
 
         private void Build(int levelId)
         {
-            var level = _levelsRepository.Load(levelId);
+            _level = _levelsRepository.Load(levelId);
             
-            _gameFieldBuilder.Build(level);
+            _gameFieldBuilder.Build(_level);
         }
 
         private void Rebuild()
@@ -73,10 +74,8 @@ namespace Assets.Scripts.Core.Managers
         {
             State = GameplayState.Complete;
 
-            Build(2);
+            Build(_level.Id + 1);
             CreatePlayer();
-            
-            // Restart();
         }
 
         private void OnFail()
