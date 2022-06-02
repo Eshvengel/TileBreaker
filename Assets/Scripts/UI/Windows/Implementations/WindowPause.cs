@@ -1,4 +1,6 @@
-﻿using Assets.Scripts.UI.Buttons;
+﻿using Assets.Scripts.ThirdParty;
+using Assets.Scripts.UI.Buttons;
+using ThirdParty.Events;
 using UnityEngine;
 
 namespace Assets.Scripts.UI.Windows.Implementations
@@ -24,7 +26,9 @@ namespace Assets.Scripts.UI.Windows.Implementations
 
         private void OnExit()
         {
-            // Go to main menu.
+            EventManager.TriggerEvent(new GamePlayExitEvent());
+            
+            Hide();
         }
     }
 }

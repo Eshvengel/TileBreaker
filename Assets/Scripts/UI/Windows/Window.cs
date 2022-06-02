@@ -7,7 +7,7 @@ namespace Assets.Scripts.UI.Windows
     public abstract class Window : MonoBehaviour
     {
         private const float OPEN_TIME = 0.5f;
-        private const float CLOSE_TIME = 0.25f;
+        private const float CLOSE_TIME = 0f;
 
         public WindowState State { get; private set; }
 

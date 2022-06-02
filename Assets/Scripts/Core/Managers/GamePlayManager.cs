@@ -89,7 +89,15 @@ namespace Assets.Scripts.Core.Managers
             EventManager.AddListener<GamePlayRestartEvent>(OnRestartLevel);
             EventManager.AddListener<GamePlayStartEvent>(OnGamePlayStart);
             EventManager.AddListener<GamePlayPauseEvent>(OnGamePlayPause);
+            EventManager.AddListener<GamePlayExitEvent>(OnGamePlayExit);
             EventManager.AddListener<PlayerActionCompleteEvent>(OnPlayerActionComplete);
+        }
+
+        private void OnGamePlayExit(GamePlayExitEvent e)
+        {
+            State = GameplayState.Complete;
+            
+            _gameFieldBuilder.GameField.Clear();
         }
 
         private void RemoveListeners()
@@ -98,6 +106,7 @@ namespace Assets.Scripts.Core.Managers
             EventManager.RemoveListener<GamePlayRestartEvent>(OnRestartLevel);
             EventManager.RemoveListener<GamePlayStartEvent>(OnGamePlayStart);
             EventManager.RemoveListener<GamePlayPauseEvent>(OnGamePlayPause);
+            EventManager.RemoveListener<GamePlayExitEvent>(OnGamePlayExit);
             EventManager.RemoveListener<PlayerActionCompleteEvent>(OnPlayerActionComplete);
         }
 
