@@ -31,6 +31,7 @@ namespace Assets.Scripts.Data.Levels
 
         public Level Load(int levelId)
         {
+            // TODO: Remove hardcode
             if (levelId > _loadedLevels.Count || levelId < 1)
             {
                 levelId = 1;

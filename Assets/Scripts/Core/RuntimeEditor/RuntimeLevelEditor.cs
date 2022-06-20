@@ -31,7 +31,7 @@ namespace Assets.Scripts.Core.RuntimeEditor
         private IBrush _brush;
         private IGameFieldBuilder _builder;
         private LevelsRepository _levelsRepository;
-        private Dictionary<int, TileData> _tilesData;
+        private List<TileData> _tilesData;
 
         #region Unity
 
@@ -39,7 +39,7 @@ namespace Assets.Scripts.Core.RuntimeEditor
         {
             _grid = new EditorGrid();
             _brush = new EditorTileBrush(EditorCamera);
-            _tilesData = new Dictionary<int, TileData>();
+            _tilesData = new List<TileData>();
             _levelsRepository = new LevelsRepository();
             _builder = GetComponent<IGameFieldBuilder>();
 
@@ -136,7 +136,7 @@ namespace Assets.Scripts.Core.RuntimeEditor
             {
                 ITile tile = References.Create(data, _builder.GameField);
                 _builder.GameField.Add(tile);
-                _tilesData[data.GetHashCode()] = data;
+                _tilesData.Add(data);
             }
         }
 
@@ -147,7 +147,7 @@ namespace Assets.Scripts.Core.RuntimeEditor
                 var tile = _builder.GameField[x, y];
                 var data = tile.GetTileData();
                 _builder.GameField.Remove(x, y);
-                _tilesData.Remove(data.GetHashCode());
+                _tilesData.Remove(data);
             }
         }
 
@@ -158,7 +158,7 @@ namespace Assets.Scripts.Core.RuntimeEditor
 
         public void SaveLevel()
         {
-            var tilesData = _tilesData.Values.ToArray();
+            var tilesData = _tilesData.ToArray();
             var level = new Level(LevelId, tilesData);
 
             _levelsRepository.Save(level);
@@ -166,6 +166,8 @@ namespace Assets.Scripts.Core.RuntimeEditor
 
         public void LoadLevel()
         {
+            _tilesData.Clear();
+            
             var level = _levelsRepository.Load(LevelId);
 
             if (level != null)
@@ -177,7 +179,7 @@ namespace Assets.Scripts.Core.RuntimeEditor
                 foreach (var tile in tiles)
                 {
                     var data = tile.GetTileData();
-                    _tilesData[data.GetHashCode()] = data;
+                    _tilesData.Add(data);
                 }
 
             }
