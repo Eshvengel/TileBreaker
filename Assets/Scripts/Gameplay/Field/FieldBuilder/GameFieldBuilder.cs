@@ -61,7 +61,7 @@ namespace Assets.Scripts.Gameplay.Field.FieldBuilder
         {
             foreach (var data in _level.Data)
             {
-                var tile = References.Create(data, _gameField);
+                var tile = Prefabs.CreateTile(data, _gameField);
                 _gameField.Add(tile);
             }
         }

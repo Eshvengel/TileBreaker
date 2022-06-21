@@ -2,6 +2,7 @@
 using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
 using UnityEngine;
 using UnityEngine.Networking;
 
@@ -23,8 +24,14 @@ namespace Assets.Scripts.Data.Levels
             var settings = new JsonSerializerSettings();
             var path = GetLevelsPath(level.Id);
             var data = JsonConvert.SerializeObject(level, Formatting.None, settings);
+
+            using (StreamWriter streamWriter = new StreamWriter(new FileStream(path, FileMode.OpenOrCreate, FileAccess.Write)))
+            {
+                streamWriter.Write(data);
+            }
             
-            File.WriteAllText(path, data);
+            
+            //File.WriteAllText(path, data, Encoding.Default);
 
             _loadedLevels[level.Id] = level;
         }

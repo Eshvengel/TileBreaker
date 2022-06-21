@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace Gameplay
 {
-    public class References : MonoBehaviour
+    public class Prefabs : MonoBehaviour
     {
         [SerializeField] private Player _player;
         [SerializeField] private TileJump _tileJump;
@@ -21,7 +21,7 @@ namespace Gameplay
 //        [SerializeField] 
 //        private TilePortal _tilePortal;
 
-        private static References instance;
+        private static Prefabs instance;
 
         private void Awake()
         {
@@ -38,8 +38,7 @@ namespace Gameplay
             return Instantiate(_player);
         }
         
-        
-        public static ITile Create(TileData data, GameField gameField)
+        public static ITile CreateTile(TileData data, GameField gameField)
         {
             return instance.Get(data, gameField);
         }

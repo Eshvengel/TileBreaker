@@ -66,7 +66,7 @@ namespace Assets.Scripts.Core.Managers
                 _player.Destroy();
             }
             
-            _player = References.CreatePlayer();
+            _player = Prefabs.CreatePlayer();
             _player.Initialize(_gameFieldBuilder.GameField);
         }
 

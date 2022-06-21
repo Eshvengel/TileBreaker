@@ -16,8 +16,8 @@ namespace Assets.Scripts.Core.RuntimeEditor
 {
     public class RuntimeLevelEditor : MonoBehaviour
     {
-        public int GridSize = 9;
-        public int TileSize = 1;
+        private const int GRID_SIZE = 9;
+        private const int TILE_SIZE = 1;
 
         public int LevelId;
         public TileType TileType;
@@ -31,15 +31,11 @@ namespace Assets.Scripts.Core.RuntimeEditor
         private IBrush _brush;
         private IGameFieldBuilder _builder;
         private LevelsRepository _levelsRepository;
-        private List<TileData> _tilesData;
-
-        #region Unity
 
         private void Awake()
         {
             _grid = new EditorGrid();
             _brush = new EditorTileBrush(EditorCamera);
-            _tilesData = new List<TileData>();
             _levelsRepository = new LevelsRepository();
             _builder = GetComponent<IGameFieldBuilder>();
 
@@ -49,18 +45,14 @@ namespace Assets.Scripts.Core.RuntimeEditor
         private void Update()
         {
             UpdateInput();
-            DrawGraphic(GridSize, TileSize);
+            DrawGraphic(GRID_SIZE, TILE_SIZE);
         }
-
-        #endregion
-
-        #region Input Handle
 
         private void UpdateInput()
         {
             if (Input.GetMouseButtonDown(0) || Input.GetMouseButton(0))
             {
-                if (!_brush.IsBrushOverGrid(GridSize))
+                if (!_brush.IsBrushOverGrid(GRID_SIZE))
                 {
                     var tileData = CreateTileDataByType(TileType);
                     CreateTile(tileData);
@@ -69,7 +61,7 @@ namespace Assets.Scripts.Core.RuntimeEditor
 
             if (Input.GetMouseButtonDown(1) || Input.GetMouseButton(1))
             {
-                if (!_brush.IsBrushOverGrid(GridSize))
+                if (!_brush.IsBrushOverGrid(GRID_SIZE))
                 {
                     DestroyTile(_brush.LogicPositionX, _brush.LogicPositionY);
                 }
@@ -90,18 +82,12 @@ namespace Assets.Scripts.Core.RuntimeEditor
             if (Input.GetKeyDown(KeyCode.Alpha4))
                 TileType = TileType.Slide;
         }
-
-        #endregion
-
-        #region Draw Graphic
-
+        
         private void DrawGraphic(float gridSize, int tileSize)
         {
             _grid?.Draw(gridSize, tileSize);
             _brush.Draw(gridSize, tileSize);
         }
-
-        #endregion
 
         private TileData CreateTileDataByType(TileType type)
         {
@@ -127,16 +113,15 @@ namespace Assets.Scripts.Core.RuntimeEditor
 
         private Vector3 GetTileWorldPosition()
         {
-            return new Vector3(_brush.LogicPositionX + (float)TileSize / 2, 0, _brush.LogicPositionY + (float)TileSize / 2);
+            return new Vector3(_brush.LogicPositionX + (float)TILE_SIZE / 2, 0, _brush.LogicPositionY + (float)TILE_SIZE / 2);
         }
 
         private void CreateTile(TileData data)
         {
             if (CanCreateTile(data))
             {
-                ITile tile = References.Create(data, _builder.GameField);
+                ITile tile = Prefabs.CreateTile(data, _builder.GameField);
                 _builder.GameField.Add(tile);
-                _tilesData.Add(data);
             }
         }
 
@@ -147,7 +132,6 @@ namespace Assets.Scripts.Core.RuntimeEditor
                 var tile = _builder.GameField[x, y];
                 var data = tile.GetTileData();
                 _builder.GameField.Remove(x, y);
-                _tilesData.Remove(data);
             }
         }
 
@@ -158,7 +142,15 @@ namespace Assets.Scripts.Core.RuntimeEditor
 
         public void SaveLevel()
         {
-            var tilesData = _tilesData.ToArray();
+            var gameField = _builder.GameField;
+            var tiles = gameField.GetTiles();
+            var tilesData = new TileData[tiles.Count];
+
+            for (int i = 0; i < tiles.Count; i++)
+            {
+                tilesData[i] = tiles[i].GetTileData();
+            }
+            
             var level = new Level(LevelId, tilesData);
 
             _levelsRepository.Save(level);
@@ -166,7 +158,7 @@ namespace Assets.Scripts.Core.RuntimeEditor
 
         public void LoadLevel()
         {
-            _tilesData.Clear();
+            Clear();
             
             var level = _levelsRepository.Load(LevelId);
 
@@ -179,9 +171,7 @@ namespace Assets.Scripts.Core.RuntimeEditor
                 foreach (var tile in tiles)
                 {
                     var data = tile.GetTileData();
-                    _tilesData.Add(data);
                 }
-
             }
         }
 
@@ -193,17 +183,11 @@ namespace Assets.Scripts.Core.RuntimeEditor
         public void Clear()
         {
             _builder.GameField.Clear();
-            _tilesData.Clear();
         }
 
         public void Play()
         {
-            // var tileStart = _builder.GameField.GetStart();
-            //
-            // if (tileStart != null)
-            // {
-            //     Player.SetPosition(tileStart);
-            // }
+            
         }
 
         public void Stop()
