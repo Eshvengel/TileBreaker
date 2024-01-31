@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
-using Newtonsoft.Json;
 using System;
+using Newtonsoft.Json;
 
 namespace Assets.Scripts.Utils
 {

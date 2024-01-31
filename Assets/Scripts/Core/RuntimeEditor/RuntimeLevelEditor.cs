@@ -78,7 +78,7 @@ namespace Assets.Scripts.Core.RuntimeEditor
 
             if (Input.GetKeyDown(KeyCode.Alpha3))
                 TileType = TileType.Jump;
-
+            
             if (Input.GetKeyDown(KeyCode.Alpha4))
                 TileType = TileType.Slide;
         }

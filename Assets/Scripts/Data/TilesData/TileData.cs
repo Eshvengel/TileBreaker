@@ -12,9 +12,9 @@ namespace Assets.Scripts.Data.TilesData
 
         public int X { get; set; }
         public int Y { get; set; }
-
+        
         [JsonConverter(typeof(Vec3Conv))]
-        //[JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
         public Vector3 WorldPosition { get; set; }
         
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]

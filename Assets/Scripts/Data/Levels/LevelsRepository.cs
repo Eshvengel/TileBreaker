@@ -1,8 +1,7 @@
 ﻿using System.Collections;
-using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
+using Newtonsoft.Json;
 using UnityEngine;
 using UnityEngine.Networking;
 
@@ -29,8 +28,7 @@ namespace Assets.Scripts.Data.Levels
             {
                 streamWriter.Write(data);
             }
-            
-            
+
             //File.WriteAllText(path, data, Encoding.Default);
 
             _loadedLevels[level.Id] = level;
